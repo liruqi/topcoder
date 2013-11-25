@@ -1,3 +1,6 @@
+/*
+For https://www.hackerrank.com/challenges/reverse-shuffle-merge
+*/
 #include <cmath>
 #include <cstdio>
 #include <vector>
