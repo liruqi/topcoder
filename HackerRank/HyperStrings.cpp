@@ -1,3 +1,6 @@
+// https://www.hackerrank.com/challenges/hyper-strings
+// dynamic programming on trie
+
 #include <cmath>
 #include <cstdio>
 #include <vector>
@@ -25,6 +28,22 @@ trieNode * trieCreate() {
     return root;
 }
 
+int trieContents(string s) {
+    trieNode *node = trie; // root
+    for (int i=0;i<s.size();i++) {
+        if (node->next[BACK_TO_ROOT] >=0) {
+            if (trieContents(s.substr(i))) return 1;
+        }
+        int c = s[i] - 'a';
+        if (node->next[c] < 0)  // not set
+        {
+            return 0;
+        }
+        node = trie + node->next[c];
+    }
+    return (node->next[BACK_TO_ROOT] == 0);
+}
+
 int updateTrie(trieNode *node, int *cur, int *pre) {
     // cout<<"#Node "<<node->id<<" "<<pre[node->id]<<"\n";
     for (int i=0;i<BACK_TO_ROOT;i++) {
@@ -45,18 +64,30 @@ int updateTrie(trieNode *node, int *cur, int *pre) {
 
 int dp[2][100 * 100];
 
+bool cmp_by_size (string a,string b) { return (a.size()<b.size()); }
 int main() {
     /* Enter your code here. Read input from STDIN. Print output to STDOUT */ 
     int N,M; cin>>N>>M;
     
     trieTop = 0;
     trieNode* root = trieCreate();
-    
+    vector<string> H;
     for (int i=0;i<N;i++) {
-        string s; cin>>s;
+        string s; cin>>s; H.push_back(s);
+    }
+    sort(H.begin(), H.end(), cmp_by_size);
+
+    for (int i=0;i<N;i++) {
+        string s = H[i];
         // add s to trie
         trieNode* cur = root;
         for (int j=0;j<s.size();j++) {
+            if (cur->next[BACK_TO_ROOT] >=0) {
+                if (trieContents(s.substr(j))) {
+                    //cout<<"# "<<s<<" can be contracted\n";
+                    break;
+                }
+            }
             int c = s[j] - 'a';
             trieNode* next;
             if (cur->next[c] < 0)  // not set
@@ -80,7 +111,8 @@ int main() {
         int *pre = dp[1- s%2];
         fill(cur, cur+trieTop, 0);
         updateTrie(root, cur, pre);
-        /* cout<<"#"<<s<<": ";
+        /*
+        cout<<"#"<<s<<": ";
         for (int i=0; i<trieTop; i++) cout<<cur[i]<<" ";
         cout<<endl;
         */
