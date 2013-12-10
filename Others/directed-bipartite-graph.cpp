@@ -42,16 +42,14 @@ int main() {
             int love = ::stoi(a.substr(1)) - 1;
             int hate = ::stoi(b.substr(1)) - 1;
             
-            //scanf("%c%d %c%d", buf, &love, buf+1, &hate);
-            //printf("#%c %d %c %d\n", a[0], love, b[0], hate);
             int loveani = a[0]-'C';
-            int hateani = a[0]-'C';
+            int hateani = b[0]-'C';
             int lid = ANIMALID(loveani, love);
             int hid = ANIMALID(hateani, hate);
             graph[lid][hid] += 1;
             outdegree[lid] += 1;
             indegree[hid] += 1;
-
+            //cout<<"#edge: "<<lid<<hid<<endl;
             if (loveani == 0) catLovers+=1;
             else dogLovers+=1;
         }
@@ -62,6 +60,7 @@ int main() {
             memset(comb, 0, sizeof comb);
             int rs, rd, maxcomb = 0;
             for (int c=0; c<C; c++) {
+                //cout<<"Cat: "<<c+1<<" degree: "<<indegree[c]<<","<<outdegree[c]<<endl;
                 if (indegree[c]>0 && outdegree[c]>0) {
                     for (int d=0;d<D;d++) {
                         int dogid = d + DOG;
@@ -80,10 +79,34 @@ int main() {
                     }
                 }
             }
+
+            for (int d=0; d<D; d++) {
+                int dogid = d + DOG;
+                if (indegree[dogid]>0 && outdegree[dogid]>0) {
+                    for (int c=0;c<C;c++) {
+                        if (graph[c][dogid]) {
+                            comb[c][dogid] += outdegree[c];
+                            if (comb[c][dogid] > maxcomb) {
+                                rs = c; rd = dogid; maxcomb = comb[c][dogid];
+                            }
+                        }
+                        if (graph[dogid][c]) {
+                            comb[dogid][c] += indegree[c];
+                            if (comb[dogid][c] > maxcomb) {
+                                rs = dogid; rd = c; maxcomb = comb[dogid][c];
+                            }
+                        }
+                    }
+                }
+            }
+            //cout<<"#maxcomb " << maxcomb<<endl;
             if (maxcomb==0) break;
             remove += graph[rs][rd];
+            outdegree[rs] -= graph[rs][rd]; 
+            indegree[rd] -= graph[rs][rd]; 
             graph[rs][rd] = 0;
         } while (1);
+        res = min(res, remove);
         cout<<(V - res)<<endl;
     }
 }
