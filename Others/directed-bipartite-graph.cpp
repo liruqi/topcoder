@@ -15,7 +15,6 @@ int C,D,V;
 
 
 int res;
-int stay[200];
 
 int graph[200][200];
 int comb[200][200];
@@ -32,7 +31,6 @@ int main() {
         memset(graph, 0, sizeof graph);
         memset(indegree, 0, sizeof indegree);
         memset(outdegree, 0, sizeof outdegree);
-        memset(stay, 0, sizeof stay);
         int catLovers = 0;
         int dogLovers = 0;
 
