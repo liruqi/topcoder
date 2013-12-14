@@ -1,6 +1,7 @@
 // in a directed bipartite graph, remove minial edge, so that for each node, either indegree zero or outdegree zero  
 #include <iostream>
 #include <string>
+#include <string.h>
 #include <deque>
 #include <algorithm>
 #include <numeric>
@@ -107,7 +108,7 @@ int main() {
                         int w = graph[c][dogid]; 
                         if (w) {
                             int v = C + d;
-                            addedge(c,v,w,w);
+                            addedge(c,v,w,0);
                             addedge(S,c,w,0);
                             addedge(S,v,w,0);
                         }
@@ -121,7 +122,7 @@ int main() {
                         int w = graph[dogid][c];
                         if (w) {
                             int u = C+d;
-                            addedge(u,c,w,w);
+                            addedge(u,c,w,0);
                             addedge(u,T,w,0);
                             addedge(c,T,w,0);
                         }
