@@ -8,7 +8,7 @@ struct node {
     int ceil, floor;
 };
 
-struct node tree[MAXSZ * 2];
+struct node tree[MAXSZ * 3];
 
 void build_tree(int p, int l, int r) {
     if (l>=r) {
