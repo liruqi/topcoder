@@ -1,0 +1,1 @@
+double D,d,S;main(T,r){scanf("%d",&T);while(T--)scanf("%lf%lf%lf",&D,&d,&S),printf("%d\n",r=3.1416/asin((S+d)/(D-d)));}

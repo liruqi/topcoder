@@ -1,0 +1,1 @@
+p(n){if(n--)p(n/26),putchar(n%26+'A');}main(r,c){for(;scanf("R%dC%d ",&r,&c),r;p(c),printf("%d\n",r));}

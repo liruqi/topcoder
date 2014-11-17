@@ -1,0 +1,23 @@
+#include<stdio.h>
+main()
+{
+      int i,n,r;
+      while(scanf("%d",&n)!=EOF)
+      {
+          r=0;
+          for(i=1;;i++)
+          {
+              r+=i;
+              if(r>=n)
+              break;
+          }
+          if((r-n)%2)
+          {
+              if(i%2)
+              i+=2;
+              else
+              i+=1;
+          }
+          printf("%d\n",i);
+      }
+}    
