@@ -6,6 +6,7 @@
 //  Copyright © 2015 CMCM. All rights reserved.
 //
 
+// leetcode problem does not exist, problem description similiar to https://leetcode.com/problems/bitwise-and-of-numbers-range/
 #include <iostream>
 #include <vector>
 
@@ -30,7 +31,6 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
 };
 
-// https://leetcode.com/problems/bitwise-and-of-numbers-range/
 class Solution {
 public:
     int singleBitwiseAnd(int x, int p) {
