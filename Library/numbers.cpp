@@ -63,12 +63,10 @@ namespace numbers {
         return retval;
     }
     
-    vector< vector<int> > unique_three_sum(vector<int>& nums, int dest) {
-        sort(nums.begin(), nums.end());
+    vector< pair<int,int> > sort_uniq_c(vector<int>& nums) { // sort | uniq -c
         vector< pair<int,int> > cnted;
-        vector< vector<int> > res;
         if (nums.size() == 0) {
-            return res;
+            return cnted;
         }
         cnted.push_back(make_pair(nums[0],1));
         for (int i=1; i<nums.size(); i++) {
@@ -79,8 +77,14 @@ namespace numbers {
                 cnted.push_back(make_pair(nums[i],1));
             }
         }
-        
-        for (int ci=cnted.size() - 1; ci >=0; ci--) {
+        return cnted;
+    }
+    
+    vector< vector<int> > unique_three_sum(vector<int>& nums, int dest) {
+        sort(nums.begin(), nums.end());
+        vector< vector<int> > res;
+        vector< pair<int,int> > cnted = sort_uniq_c(nums);
+        for (long ci=cnted.size() - 1; ci >=0; ci--) {
             pair<int,int> cp = cnted[ci];
             if (cp.first * 3 < dest) {
                 break;
@@ -97,8 +101,8 @@ namespace numbers {
             }
             
             int sum = cp.first * 2;
-            if (cp.second == 2) {
-                for (int ai=ci - 1; ai >= 0; ai--) {
+            if (cp.second >= 2) {
+                for (long ai=ci - 1; ai >= 0; ai--) {
                     if (sum + cnted[ai].first == dest) {
                         vector<int> can;
                         can.push_back(cnted[ai].first);
@@ -111,12 +115,12 @@ namespace numbers {
             }
             sum = cp.first;
             int bdest = dest - sum;
-            for (int bi = ci - 1; bi >= 0; bi --) {
+            for (long bi = ci - 1; bi >= 0; bi --) {
                 pair<int,int> bp = cnted[bi];
                 if (bp.first * 2 < bdest) {
                     break;
                 }
-                if (bp.first * 2 == dest) {
+                if (bp.first * 2 == bdest) {
                     if (bp.second >= 2) {
                         vector<int> can;
                         can.push_back(bp.first);
@@ -127,7 +131,7 @@ namespace numbers {
                     break;
                 }
                 int cdest = bdest - bp.first;
-                for (int ai=bi - 1; ai >= 0; ai--) {
+                for (long ai=bi - 1; ai >= 0; ai--) {
                     if (cnted[ai].first == cdest) {
                         vector<int> can;
                         can.push_back(cnted[ai].first);
