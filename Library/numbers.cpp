@@ -4,7 +4,9 @@
 #include <vector>
 
 using namespace std;
-
+#ifndef abs
+#define abs fabs
+#endif
 namespace numbers {
     std::string int_to_roman(int value)
     {
@@ -145,6 +147,43 @@ namespace numbers {
         }
         return res;
     }
+    
+    int closest_three_sum(vector<int>& nums, int dest) {
+        sort(nums.begin(), nums.end());
+        long res = INT_MAX;
+        vector< pair<int,int> > cnted = sort_uniq_c(nums);
+        for (long ci=cnted.size() - 1; ci >=0; ci--) {
+            pair<int,int> cp = cnted[ci];
+            if (cp.second >= 3) {
+                if (abs(cp.first * 3 - dest) < abs(res - dest)) {
+                    res = cp.first * 3;
+                }
+            }
+            if (cp.second >= 2) {
+                for (long ai=ci - 1; ai >= 0; ai--) {
+                    if (abs(cp.first * 2 + cnted[ai].first - dest) < abs(res - dest)) {
+                        res = cp.first * 2 + cnted[ai].first;
+                    }
+                }
+            }
+            
+            for (long bi = ci - 1; bi >= 0; bi --) {
+                pair<int,int> bp = cnted[bi];
+                if (bp.second >= 2) {
+                    if (abs(bp.first * 2 + cp.first - dest) < abs(res - dest)) {
+                        res = bp.first * 2 + cp.first;
+                    }
+                }
+                
+                for (long ai=bi - 1; ai >= 0; ai--) {
+                    if (abs(bp.first + cp.first + cnted[ai].first - dest) < abs(res - dest)) {
+                        res = bp.first + cp.first + cnted[ai].first;
+                    }
+                }
+            }
+        }
+        return res;
+    }
 };
 
 class Solution {
@@ -159,4 +198,9 @@ public:
     vector<vector<int> > threeSum(vector<int>& nums) {
         return numbers::unique_three_sum(nums, 0);
     }
+    
+    int threeSumClosest(vector<int>& nums, int target) {
+        return numbers::closest_three_sum(nums, target);
+    }
 };
+
