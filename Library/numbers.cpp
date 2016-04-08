@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace number {
+namespace numbers {
     std::string int_to_roman(int value)
     {
         struct romandata_t { int value; char const* numeral; };
@@ -146,13 +146,13 @@ namespace number {
 class Solution {
 public:
     string intToRoman(int num) {
-        return number::int_to_roman(num);
+        return numbers::int_to_roman(num);
     }
     int romanToInt(string s) {
-        return number::roman_to_int(s);
+        return numbers::roman_to_int(s);
     }
     
     vector<vector<int> > threeSum(vector<int>& nums) {
-        return number::unique_three_sum(nums, 0);
+        return numbers::unique_three_sum(nums, 0);
     }
 };
