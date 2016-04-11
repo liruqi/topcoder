@@ -2,11 +2,15 @@
 
 #include <string>
 #include <vector>
+#include <map>
+#include <iostream>
+
+#include "math.h"
 
 using namespace std;
+
 #ifndef abs
-#define abs fabs
-#endif
+#define abs(x) (((x) > 0) ? (x) : (-(x)))
 namespace numbers {
     std::string int_to_roman(int value)
     {
@@ -70,6 +74,7 @@ namespace numbers {
         if (nums.size() == 0) {
             return cnted;
         }
+        sort(nums.begin(), nums.end());
         cnted.push_back(make_pair(nums[0],1));
         for (int i=1; i<nums.size(); i++) {
             pair<int,int> & top = cnted[cnted.size() - 1];
@@ -82,10 +87,8 @@ namespace numbers {
         return cnted;
     }
     
-    vector< vector<int> > unique_three_sum(vector<int>& nums, int dest) {
-        sort(nums.begin(), nums.end());
+    vector< vector<int> > _unique_three_sum(vector<pair<int,int> > & cnted, int dest) {
         vector< vector<int> > res;
-        vector< pair<int,int> > cnted = sort_uniq_c(nums);
         for (long ci=cnted.size() - 1; ci >=0; ci--) {
             pair<int,int> cp = cnted[ci];
             if (cp.first * 3 < dest) {
@@ -148,6 +151,12 @@ namespace numbers {
         return res;
     }
     
+    vector< vector<int> > unique_three_sum(vector<int>& nums, int dest) {
+        vector< pair<int,int> > cnted = sort_uniq_c(nums);
+        return _unique_three_sum(cnted, dest);
+    }
+    
+    
     int closest_three_sum(vector<int>& nums, int dest) {
         sort(nums.begin(), nums.end());
         long res = INT_MAX;
@@ -184,6 +193,64 @@ namespace numbers {
         }
         return res;
     }
+    
+    
+    /* cnted 是一个递增的数组
+     * pair first 为数值；pair sencond 为数量(假设均>=1)
+     */
+    vector< vector<int> > _unique_sum(vector<pair<int,int> >& cnted, int startIdx, int dest, int depth) {
+        vector< vector<int> > res;
+        
+        pair<int,int> & cp = cnted[startIdx];
+        if (depth == 0) {
+            if (dest == 0) {
+                vector<int> can;
+                res.push_back(can);
+            }
+            return res;
+        }
+        if (startIdx >= cnted.size()) return res;
+        if (depth == 1) {
+            int endIdx = cnted.size() - 1;
+            while (startIdx <= endIdx) {
+                int m = (startIdx + endIdx) / 2;
+                int d = cnted[m].first - dest;
+                if (d == 0) {
+                    vector<int> can;
+                    can.push_back(dest);
+                    res.push_back(can);
+                    break;
+                } else if (d < 0) {
+                    startIdx = m + 1;
+                } else {
+                    endIdx = m - 1;
+                }
+            }
+            
+            return res;
+        }
+        if (cp.first * depth > dest) {
+            return res;
+        }
+        if (cnted[cnted.size() - 1].first * depth < dest) {
+            return res;
+        }
+        for (int c= min(cp.second, depth); c>=0; c--) {
+            vector< vector<int> > subres = _unique_sum(cnted, startIdx + 1, dest - cp.first * c, depth - c);
+            for (int subi=0; subi<subres.size(); subi++) {
+                vector<int> can = subres[subi];
+                can.insert(can.begin(), c, cp.first);
+                res.push_back(can);
+            }
+        }
+        
+        return res;
+    }
+    
+    vector< vector<int> > unique_four_sum(vector<int>& nums, int target) {
+        vector< pair<int,int> > cnted = numbers::sort_uniq_c(nums);
+        return numbers::_unique_sum(cnted, 0, target, 4);
+    }
 };
 
 class Solution {
@@ -201,6 +268,10 @@ public:
     
     int threeSumClosest(vector<int>& nums, int target) {
         return numbers::closest_three_sum(nums, target);
+    }
+    
+    vector<vector<int> > fourSum(vector<int>& nums, int target) {
+        return numbers::unique_four_sum(nums, target);
     }
 };
 
