@@ -306,6 +306,46 @@ namespace numbers {
     }
 };
 
+namespace maths {
+#define MATH_MAX_INT 1000000000
+#define MATH_SQRT_MAX_INT 31623
+//    bool primes[MATH_SQRT_MAX_INT];
+//    int primes_cnt;
+    bool is_prime(int x) {
+        for (int i=2; i*i <= x; i++) {
+            if (x % i == 0) return false;
+        }
+        return x > 1;
+    }
+    int sum_of_decimal_digits_squares(int n) {
+        int s = 0;
+        while (n > 0) {
+            int d =(n % 10);
+            s += d*d;
+            n /= 10;
+        }
+        return s;
+    }
+};
+
+struct ExploringNumbers {
+    int numberOfSteps(int n) {
+        set<int> numbers;
+        int it = n;
+        while (! maths::is_prime(it)) {
+            if (numbers.find(it) == numbers.end()) {
+                cout << "# " << it << endl;
+                numbers.insert(it);
+                if (numbers.size() >= n) return -1;
+                it = maths::sum_of_decimal_digits_squares(it);
+            } else {
+                return -1;
+            }
+        }
+        return numbers.size() + 1;
+    }
+};
+
 class Solution {
 public:
     string intToRoman(int num) {
@@ -335,6 +375,11 @@ struct Similars { // TCO 2015 Round 1A DIV 1
 };
 
 int main() {
+    {
+        ExploringNumbers s;
+        cout<<s.numberOfSteps(12366)<<endl;
+        return 0;
+    }
     {
         Similars s;
         cout<<s.maxsim(444, 454)<<endl;
