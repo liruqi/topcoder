@@ -5,7 +5,7 @@
 #include <map>
 #include <set>
 #include <iostream>
-
+#include <numeric>
 #include "math.h"
 
 using namespace std;
@@ -264,6 +264,15 @@ namespace numbers {
         return s;
     }
     
+    vector<int> decimal_digits(int n) {
+        vector<int> dgts;
+        while (n > 0) {
+            dgts.push_back(n % 10);
+            n /= 10;
+        }
+        return dgts;
+    }
+    
     // range: [left, right]
     int max_decimal_digits_set_intersection(int left,int right) {
         map<int,int> cnt[11];
@@ -303,6 +312,90 @@ namespace numbers {
             }
         }
         return 0;
+    }
+};
+
+namespace maths {
+#define MATH_MAX_INT 1000000000
+#define MATH_SQRT_MAX_INT 31623
+//    bool primes[MATH_SQRT_MAX_INT];
+//    int primes_cnt;
+    bool is_prime(int x) {
+        for (int i=2; i*i <= x; i++) {
+            if (x % i == 0) return false;
+        }
+        return x > 1;
+    }
+    int sum_of_decimal_digits_squares(int n) {
+        int s = 0;
+        while (n > 0) {
+            int d =(n % 10);
+            s += d*d;
+            n /= 10;
+        }
+        return s;
+    }
+};
+
+struct ExploringNumbers {
+    int numberOfSteps(int n) {
+        set<int> numbers;
+        int it = n;
+        while (! maths::is_prime(it)) {
+            if (numbers.find(it) == numbers.end()) {
+                cout << "# " << it << endl;
+                numbers.insert(it);
+                if (numbers.size() >= n) return -1;
+                it = maths::sum_of_decimal_digits_squares(it);
+            } else {
+                return -1;
+            }
+        }
+        return numbers.size() + 1;
+    }
+};
+
+/*
+ Vasa is a shopkeeper in the small town Deronje. Currently, there are some items for sale in his store. The price of each item is a positive integer. You are given these prices in the vector <int> A. Each item has a price tag.
+ Vasa has just learned that a very rich shopper is going to visit his store. Therefore, Vasa wants to alter some of the price tags to make the items in his store more expensive.
+ Vasa has a collection of stickers. Each of those stickers contains a single digit between 1 and 9, inclusive. Note that he has no stickers with zeros. You are given the description of Vasa's stickers in the vector <int> D. For each i between 1 and 9, inclusive, Vasa has D[i-1] stickers with the digit i.
+ Vasa can take any sticker and use it to replace any digit on any price tag. However, there is no extra room on the price tags, so he cannot add new digits, he can only replace existing ones.
+ Compute and return the maximum total cost of items in Vasa's store after he applies some (possibly none, possibly all) of his stickers to the current price tags.
+ */
+struct ReplacingDigit {
+    int getMaximumStockWorth(vector <int> A, vector <int> D) {
+        vector< vector<int> > digits[8];
+        for (int num : A) {
+            vector<int> dgts = numbers::decimal_digits(num);
+            digits[dgts.size()].push_back(dgts);
+        }
+        int res = std::accumulate(A.begin(), A.end(), 0);
+        
+        int pi = 6;
+        int p = 1000000;
+        for (; pi>=0; p/=10, pi-=1) {
+            
+            int ncnts[10] = {0,0,0,0,0,0,0,0,0,0};
+            for(int sz=pi+1; sz<=7; sz+=1) {
+                for (int i=0; i<digits[sz].size(); i++)
+                    ncnts[ digits[sz][i][pi]] += 1;
+            }
+            for(int j=0; j<=9; j++) {
+                for (int i=D.size() - 1; i>=0; i--) {
+                    if (D[i] == 0) {
+                        continue;
+                    }
+                    int dgt = i + 1;
+                    if (dgt <= j) break;
+                    int cnt = min(D[i], ncnts[j]);
+                    D[i] -= cnt;
+                    ncnts[j] -= cnt;
+                    res += p * (dgt - j) * cnt;
+                }
+            }
+        }
+
+        return res;
     }
 };
 
