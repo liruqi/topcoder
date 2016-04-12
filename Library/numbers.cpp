@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <iostream>
 
 #include "math.h"
@@ -11,6 +12,8 @@ using namespace std;
 
 #ifndef abs
 #define abs(x) (((x) > 0) ? (x) : (-(x)))
+#endif
+
 namespace numbers {
     std::string int_to_roman(int value)
     {
@@ -250,6 +253,56 @@ namespace numbers {
     vector< vector<int> > unique_four_sum(vector<int>& nums, int target) {
         vector< pair<int,int> > cnted = numbers::sort_uniq_c(nums);
         return numbers::_unique_sum(cnted, 0, target, 4);
+    }
+    
+    int decimal_digits_set(int n) {
+        int s = 0;
+        while (n > 0) {
+            s |= (1 << (n % 10));
+            n /= 10;
+        }
+        return s;
+    }
+    
+    // range: [left, right]
+    int max_decimal_digits_set_intersection(int left,int right) {
+        map<int,int> cnt[11];
+        
+        for (int i = left; i<=right; i++) {
+            int s = decimal_digits_set(i);
+            map<int,int> & mp = cnt[__builtin_popcount(s)];
+            map<int, int>::iterator it = mp.find(s);
+            if (it == mp.end()) {
+                mp[s] = 1;
+            } else {
+                it->second += 1;
+            }
+        }
+        
+        for (int i=10; i>0; i--) {
+            map<int,int> & mp = cnt[i];
+            if (mp.size() == 0) {
+                continue;
+            }
+            for (map<int, int>::iterator it = mp.begin(); it != mp.end(); it++) {
+                if (it->second > 1) {
+                    return i;
+                }
+                map<int,int> & pmp = cnt[i - 1];
+                int s = it->first;
+                for (int i=1; i>=0 && i<=s; i *= 2) {
+                    if (s & i) {
+                        map<int, int>::iterator pit = pmp.find(s - i);
+                        if (pit == pmp.end()) {
+                            pmp[s - i] = 1;
+                        } else {
+                            pit->second += 1;
+                        }
+                    }
+                }
+            }
+        }
+        return 0;
     }
 };
 
