@@ -371,6 +371,36 @@ namespace lists {
         cout<<" # len="<<s<<endl;
         return s;
     }
+    
+    ListNode * merge_inc_list(ListNode *l1, ListNode *l2) {
+        if (! l1) return l2;
+        if (! l2) return l1;
+        
+        ListNode *h = 0;
+        ListNode *it = NULL;
+        if (l1->val < l2->val) {
+            h = l1; l1 = l1->next;
+        } else {
+            h = l2; l2 = l2->next;
+        }
+        it = h;
+        while (l1 || l2) {
+            if (! l1) {
+                it->next = l2;
+                return h;
+            }
+            if (! l2) {
+                it->next = l1;
+                return h;
+            }
+            if (l1->val < l2->val) {
+                it -> next = l1; it = l1; l1 = l1->next;
+            } else {
+                it -> next = l2; it = l2; l2 = l2->next;
+            }
+        }
+        return h;
+    }
 };
 
 
@@ -408,6 +438,7 @@ namespace strings {
         
         return (stk.size() == 0);
     }
+
 };
 
 struct ExploringNumbers {
@@ -514,6 +545,10 @@ public:
         
         return strings::is_closed_parentheses(s, mp);
     }
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        return lists::merge_inc_list(l1,l2);
+    }
+    
 };
 
 struct Similars { // TCO 2015 Round 1A DIV 1
@@ -525,14 +560,15 @@ struct Similars { // TCO 2015 Round 1A DIV 1
 int main() {
     Solution s;
     {
-        cout<< s.isValid("()[]{}") << endl;
-        return 0;
+//        cout<< s.isValid("()[]{}") << endl;
+//        return 0;
     }
     {
         ListNode n1(1);
         ListNode n2(2);
-        n1.next = & n2;
-        s.removeNthFromEnd(& n1, 1);
+//        n1.next = & n2;
+//        s.removeNthFromEnd(& n1, 1);
+        s.mergeTwoLists(&n1, &n2);
         lists::dump(& n1);
         return 0;
     }
