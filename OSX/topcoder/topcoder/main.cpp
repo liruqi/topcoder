@@ -431,6 +431,32 @@ namespace lists {
         }
         return h;
     }
+    /*
+     Swap two list nodes
+     
+     o -> p -> q -> r
+     o -> q@ p -> r
+     o -> q -> p -> r
+     
+     handled case p->next == q
+     case q->next == p is not handled
+     */
+    pair<ListNode *, ListNode *> swap(ListNode **paddr, ListNode **qaddr) {
+        if (! paddr || !qaddr) {
+            ListNode *nil = NULL;
+            return make_pair(nil,nil);
+        }
+        ListNode *p = (*paddr);
+        ListNode *q = (*qaddr);
+        std::swap(p->next, q->next);
+        if (q->next == q) {
+            q->next = p;
+            *paddr = q;
+        } else {
+            std::swap(*paddr, *qaddr);
+        }
+        return make_pair(q, p);
+    }
 };
 
 
@@ -592,6 +618,22 @@ public:
     ListNode* mergeKLists(vector<ListNode*>& lists) {
         return lists::merge_inc_lists(lists);
     }
+    ListNode* swapPairs(ListNode* head) {
+        if ((! head) || (! head->next)) {
+            return head;
+        }
+        ListNode *ret = NULL;
+        ListNode **it = & head;
+        while ((*it) && (*it)->next) {
+            pair<ListNode *, ListNode *> p = lists::swap(it, &((*it)->next));
+            if (! ret) ret = p.first;
+            it = & (p.second->next);
+#if DEBUG
+            lists::dump(ret);
+#endif
+        }
+        return ret;
+    }
 };
 
 struct Similars { // TCO 2015 Round 1A DIV 1
@@ -603,8 +645,21 @@ struct Similars { // TCO 2015 Round 1A DIV 1
 int main() {
     Solution s;
     {
-//        cout<< s.isValid("()[]{}") << endl;
-//        return 0;
+        ListNode n1(1);
+        ListNode n2(2);
+        ListNode n3(3);
+        ListNode n4(4);
+        
+        n1.next = & n2;
+        n2.next = & n3;
+        n3.next = & n4;
+        ListNode *head = s.swapPairs(&n1);
+        lists::dump(head);
+        return 0;
+    }
+    {
+        cout<< s.isValid("()[]{}") << endl;
+        return 0;
     }
     {
         ListNode n1(1);
