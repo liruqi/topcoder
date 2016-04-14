@@ -7,6 +7,7 @@
 #include <iostream>
 #include <numeric>
 #include <stack>
+#include <queue>
 #include "math.h"
 
 using namespace std;
@@ -345,6 +346,11 @@ struct ListNode {
     ListNode(int x) : val(x), next(NULL) {}
     
 };
+struct ListNodeCompare {
+    bool operator()(ListNode * p, ListNode * q){
+        return p->val > q->val;
+    }
+};
 
 namespace lists {
     size_t size(ListNode *h) {
@@ -359,7 +365,7 @@ namespace lists {
         // free(p)
         return 1;
     }
-    ListNode ** get(ListNode **it, int k) {
+    ListNode ** get(ListNode **it, size_t k) {
         for (;k>0;k--) {
             it = & ((*it)->next);
         }
@@ -397,6 +403,30 @@ namespace lists {
                 it -> next = l1; it = l1; l1 = l1->next;
             } else {
                 it -> next = l2; it = l2; l2 = l2->next;
+            }
+        }
+        return h;
+    }
+    ListNode* merge_inc_lists(vector<ListNode*>& lists) {
+        ListNode *h = NULL;
+        ListNode *it = NULL;
+        priority_queue<ListNode*, vector<ListNode*>, ListNodeCompare> pq;
+        for (ListNode * lh : lists) {
+            if (lh) {
+                pq.push(lh);
+            }
+        }
+        while (pq.size()) {
+            if (h) {
+                it->next = pq.top();
+                it = it->next;
+            } else {
+                it = pq.top();
+                h = it;
+            }
+            pq.pop();
+            if (it && it->next) {
+                pq.push(it->next);
             }
         }
         return h;
@@ -527,7 +557,7 @@ public:
     
     ListNode* removeNthFromEnd(ListNode* head, int n) {
         size_t sz = lists::size(head);
-        int k = sz - n;
+        size_t k = sz - n;
         ListNode **it = lists::get(& head, k);
         lists::remove(it);
         return head;
@@ -548,7 +578,20 @@ public:
     ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
         return lists::merge_inc_list(l1,l2);
     }
-    
+    ListNode* mergeKListsBruteforce(vector<ListNode*>& lists) {
+        ListNode *res = NULL;
+        for (ListNode* lst : lists) {
+            if (res) {
+                res = lists::merge_inc_list(res, lst);
+            } else {
+                res = lst;
+            }
+        }
+        return res;
+    }
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        return lists::merge_inc_lists(lists);
+    }
 };
 
 struct Similars { // TCO 2015 Round 1A DIV 1
@@ -566,10 +609,18 @@ int main() {
     {
         ListNode n1(1);
         ListNode n2(2);
+        ListNode n3(3);
+        ListNode n4(4);
+        ListNode n5(5);
+        n1.next = & n5;
+        n2.next = & n4;
 //        n1.next = & n2;
 //        s.removeNthFromEnd(& n1, 1);
-        s.mergeTwoLists(&n1, &n2);
-        lists::dump(& n1);
+//        s.mergeTwoLists(&n1, &n2);
+        vector<ListNode*> para {&n1, &n3, &n2};
+        ListNode *head = s.mergeKLists(para);
+
+        lists::dump(head);
         return 0;
     }
     {

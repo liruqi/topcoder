@@ -10,6 +10,12 @@ struct ListNode {
     ListNode(int x) : val(x), next(NULL) {}
 };
 
+struct ListNodeCompare {
+    bool operator()(ListNode * p, ListNode * q){
+        return p->val > q->val;
+    }
+};
+
 namespace lists {
     size_t size(ListNode *h) {
         size_t s = 0;
@@ -23,7 +29,7 @@ namespace lists {
         // free(p)
         return 1;
     }
-    ListNode ** get(ListNode **it, int k) {
+    ListNode ** get(ListNode **it, size_t k) {
         for (;k>0;k--) {
             it = & ((*it)->next);
         }
@@ -35,6 +41,7 @@ namespace lists {
         cout<<" # len="<<s<<endl;
         return s;
     }
+    
     ListNode * merge_inc_list(ListNode *l1, ListNode *l2) {
         if (! l1) return l2;
         if (! l2) return l1;
@@ -64,6 +71,30 @@ namespace lists {
         }
         return h;
     }
+    ListNode* merge_inc_lists(vector<ListNode*>& lists) {
+        ListNode *h = NULL;
+        ListNode *it = NULL;
+        priority_queue<ListNode*, vector<ListNode*>, ListNodeCompare> pq;
+        for (ListNode * lh : lists) {
+            if (lh) {
+                pq.push(lh);
+            }
+        }
+        while (pq.size()) {
+            if (h) {
+                it->next = pq.top();
+                it = it->next;
+            } else {
+                it = pq.top();
+                h = it;
+            }
+            pq.pop();
+            if (it && it->next) {
+                pq.push(it->next);
+            }
+        }
+        return h;
+    }
 };
 
 class Solution {
@@ -79,5 +110,19 @@ public:
 
     ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
         return lists::merge_inc_list(l1,l2);
+    }
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        ListNode *res = NULL;
+        for (ListNode* lst : lists) {
+            if (res) {
+                res = lists::merge_inc_list(res, lst);
+            } else {
+                res = lst;
+            }
+        }
+        return res;
+    }
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        return lists::merge_inc_lists(lists);
     }
 };
