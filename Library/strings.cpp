@@ -38,6 +38,21 @@ namespace strings {
         
         return (stk.size() == 0);
     }
+
+    long to_long(string s, int *mp, long base) {
+        long ret = 0;
+        for(char ch : s) {
+            ret = mp[ch] + ret * base;
+        }
+        return ret;
+    }
+    
+    long excel_column_to_long(string s) {
+        char mp[STRINGS_CHARSET_SZ];
+        memset(mp, 0, sizeof(mp));
+        for (char ch='A'; ch <='Z'; ch++) mp[ch] = ch - 'A' + 1;
+        return to_long(s, mp, 26);
+    }
 };
 
 class Solution {
@@ -54,4 +69,5 @@ public:
 
         return strings::is_closed_parentheses(s, mp);   
     }
+    
 };
