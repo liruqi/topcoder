@@ -344,8 +344,8 @@ struct ListNode {
     int val;
     ListNode *next;
     ListNode(int x) : val(x), next(NULL) {}
-    
 };
+
 struct ListNodeCompare {
     bool operator()(ListNode * p, ListNode * q){
         return p->val > q->val;

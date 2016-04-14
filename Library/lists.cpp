@@ -95,6 +95,33 @@ namespace lists {
         }
         return h;
     }
+    /*
+     Swap two list nodes
+     
+     o -> p -> q -> r
+     o -> q@ p -> r
+     o -> q -> p -> r
+     
+     handled case p->next == q
+     case q->next == p is not handled
+     */
+    pair<ListNode *, ListNode *> swap(ListNode **paddr, ListNode **qaddr) {
+        if (! paddr || !qaddr) {
+            ListNode *nil = NULL;
+            return make_pair(nil,nil);
+        }
+        ListNode *p = (*paddr);
+        ListNode *q = (*qaddr);
+        std::swap(p->next, q->next);
+        if (q->next == q) {
+            q->next = p;
+            *paddr = q;
+        } else {
+            std::swap(*paddr, *qaddr);
+        }
+        return make_pair(q, p);
+    }
+};
 };
 
 class Solution {
@@ -102,7 +129,7 @@ public:
     //https://leetcode.com/problems/remove-nth-node-from-end-of-list/
     ListNode* removeNthFromEnd(ListNode* head, int n) {
         size_t sz = lists::size(head);
-        int k = sz - n;
+        size_t k = sz - n;
         ListNode **it = lists::get(& head, k);
         lists::remove(it);
         return head;
@@ -125,4 +152,21 @@ public:
     ListNode* mergeKLists(vector<ListNode*>& lists) {
         return lists::merge_inc_lists(lists);
     }
+    ListNode* swapPairs(ListNode* head) {
+        if ((! head) || (! head->next)) {
+            return head;
+        }
+        ListNode *ret = NULL;
+        ListNode **it = & head;
+        while ((*it) && (*it)->next) {
+            pair<ListNode *, ListNode *> p = lists::swap(it, &((*it)->next));
+            if (! ret) ret = p.first;
+            it = & (p.second->next);
+#if DEBUG
+            lists::dump(ret);
+#endif
+        }
+        return ret;
+    }
 };
+
