@@ -874,26 +874,43 @@ public:
         return strings::long_to_excel_column(n);
     }
     vector<int> cnt;
+    int charcnt[ALPHABETS];
     int wordslen;
     vector<int> findSubstring(string s, vector<string>& words) {
         Trie trie;
         int id = 0;
         cnt.clear();
         wordslen = 0;
+        fill(charcnt, charcnt+ALPHABETS, 0);
         for (string w : words) {
             TrieNode *nd = trie.insert(w, id);
             id ++;
             cnt.push_back(0);
             cnt[nd->occurrences[0]] += 1;
-            wordslen += w.length();
+            for (char ch : w) {
+                wordslen += 1;
+                charcnt[ch - 'a'] += 1;
+            }
         }
         cout << s.size() << endl;
         vector<int> res;
+        int subcnt[ALPHABETS];
+        fill(subcnt, subcnt+ALPHABETS, 0);
+        for (int i=0; i<wordslen; i++) {
+            subcnt[s[i] - 'a'] += 1;
+        }
         for (int i=0; i+wordslen <=s.size(); i++) {
-            vector<int> rcnt = cnt;
-            if (findMatch(s.substr(i), trie, rcnt)) {
-                res.push_back(i);
+            if (memcmp(subcnt, charcnt, sizeof(charcnt)) == 0) {
+                vector<int> rcnt = cnt;
+                if (findMatch(s.substr(i), trie, rcnt)) {
+                    res.push_back(i);
+                }
             }
+            subcnt[s[i] - 'a'] -= 1;
+            if (i + wordslen >= s.size()) {
+                break;
+            }
+            subcnt[s[i + wordslen] - 'a'] += 1;
         }
         return res;
     }
