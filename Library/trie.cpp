@@ -187,31 +187,25 @@ public:
 class Solution {
 public:
     vector<int> cnt;
+    int wordslen;
     vector<int> findSubstring(string s, vector<string>& words) {
         Trie trie;
         int id = 0;
         cnt.clear();
+        wordslen = 0;
         for (string w : words) {
             TrieNode *nd = trie.insert(w, id);
             id ++;
             cnt.push_back(0);
             cnt[nd->occurrences[0]] += 1;
+            wordslen += w.length();
         }
+        cout << s.size() << endl;
         vector<int> res;
-        return dfs(s, trie);
-    }
-    
-    vector<int> dfs(string s, Trie trie) {
-        // check if substr s can match with start position
-        vector<int> rcnt = cnt;
-        vector<int> res;
-        if (findMatch(s, trie, rcnt)) {
-            res.push_back(0);
-        }
-        if (s.size() > 0) {
-            vector<int> more = dfs(s.substr(1), trie);
-            for (int idx : more) {
-                res.push_back(idx + 1);
+        for (int i=0; i+wordslen <=s.size(); i++) {
+            vector<int> rcnt = cnt;
+            if (findMatch(s.substr(i), trie, rcnt)) {
+                res.push_back(i);
             }
         }
         return res;
