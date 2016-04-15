@@ -899,11 +899,19 @@ public:
         for (int i=0; i<wordslen; i++) {
             subcnt[s[i] - 'a'] += 1;
         }
+        set<string> bad;
+        
         for (int i=0; i+wordslen <=s.size(); i++) {
             if (memcmp(subcnt, charcnt, sizeof(charcnt)) == 0) {
                 vector<int> rcnt = cnt;
-                if (findMatch(s.substr(i), trie, rcnt)) {
+                string can = s.substr(i, wordslen);
+                if (bad.find(can) != bad.end()) {
+                    continue;
+                }
+                if (findMatch(can, trie, rcnt)) {
                     res.push_back(i);
+                } else {
+                    bad.insert(s.substr(i, wordslen));
                 }
             }
             subcnt[s[i] - 'a'] -= 1;
@@ -921,7 +929,7 @@ public:
             char ch = s[i];
             it = it->children[ch - 'a'];
             if (! it) {
-                break;
+                return false;
             }
             if (it->occurrences.size() == 0) {
                 continue;
