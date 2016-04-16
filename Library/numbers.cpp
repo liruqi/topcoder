@@ -313,6 +313,82 @@ namespace numbers {
         }
         return 0;
     }
+    size_t dump(vector<int> lst) {
+        for (int v : lst) { cout<<v<<" "; }
+        cout<<" # len="<<lst.size()<<endl;
+        return lst.size();
+    }
+    
+    // find longest increasing prefix
+    // return prefix
+    vector< pair<int,int> > inc_prefix_uniq_c(vector<int>& nums) {
+        vector< pair<int,int> > cnted;
+        if (nums.size() == 0) {
+            return cnted;
+        }
+        cnted.push_back(make_pair(nums[0],1));
+        for (int i=1; i<nums.size(); i++) {
+            pair<int,int> & top = cnted[cnted.size() - 1];
+            if (top.first == nums[i]) {
+                top.second += 1;
+            } else if (top.first > nums[i]) {
+                cnted.push_back(make_pair(nums[i],1));
+            } else {
+                break;
+            }
+        }
+        return cnted;
+    }
+    // find longest increasing prefix
+    // return prefix length
+    size_t inc_prefix(vector<int>& nums) {
+        vector< pair<int,int> > cnted;
+        if (nums.size() == 0) {
+            return 0;
+        }
+        cnted.push_back(make_pair(nums[0],1));
+        for (size_t i=1; i<nums.size(); i++) {
+            pair<int,int> & top = cnted[cnted.size() - 1];
+            if (top.first == nums[i]) {
+                top.second += 1;
+            } else if (top.first < nums[i]) {
+                cnted.push_back(make_pair(nums[i],1));
+            } else {
+                return i;
+            }
+        }
+        return nums.size();
+    }
+    
+    /*
+     Given an array of n positive integers and a positive integer s, find the minimal length of a subarray of which the sum ≥ s. If there isn't one, return 0 instead.
+     
+     For example, given the array [2,3,1,2,4,3] and s = 7,
+     the subarray [4,3] has the minimal length under the problem constraint.
+     return 2
+     */
+    size_t length_of_min_sub_array_greater_or_equal(int s, vector<int>& nums) {
+        size_t start = 0;
+        size_t end = 0;
+        int can = 0;
+        size_t ret = nums.size();
+        while (start <= end && start<nums.size() && end < nums.size()) {
+            while (can < s) {
+                can += nums[end];
+                end += 1;
+                if (end >= nums.size()) { if (can < s && start == 0) return 0; break;}
+            }
+            while (can - nums[start] >= s) {
+                can -= nums[start];
+                start += 1;
+            }
+            cout<< start << end << endl;
+            ret = min(end - start, ret);
+            can -= nums[start];
+            start += 1;
+        }
+        return ret;
+    }
 };
 
 namespace maths {
