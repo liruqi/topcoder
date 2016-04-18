@@ -1069,6 +1069,11 @@ public:
         
         return numbers::_unique_sum(cnted, 0, target);
     }
+    
+    vector<vector<int> > combinationSum2(vector<int>& candidates, int target) {
+        vector< pair<int,int> > cnted = numbers::sort_uniq_c(candidates);
+        return numbers::_unique_sum(cnted, 0, target);
+    }
 };
 
 struct Similars { // TCO 2015 Round 1A DIV 1
