@@ -1074,6 +1074,14 @@ public:
         vector< pair<int,int> > cnted = numbers::sort_uniq_c(candidates);
         return numbers::_unique_sum(cnted, 0, target);
     }
+    
+    vector<vector<int>> combinationSum3(int k, int target) {
+        vector< pair<int,int> > cnted;
+        for (int c=1; c<10; c++) {
+            cnted.push_back(make_pair(c, target/c));
+        }
+        return numbers::_unique_sum_fixed_size(cnted, 0, target, k);
+    }
 };
 
 struct Similars { // TCO 2015 Round 1A DIV 1
