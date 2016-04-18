@@ -204,7 +204,7 @@ namespace numbers {
     /* cnted 是一个递增的数组
      * pair first 为数值；pair sencond 为数量(假设均>=1)
      */
-    vector< vector<int> > _unique_sum(vector<pair<int,int> >& cnted, int startIdx, int dest, int depth) {
+    vector< vector<int> > _unique_sum_fixed_size(vector<pair<int,int> >& cnted, int startIdx, int dest, int depth) {
         vector< vector<int> > res;
         
         pair<int,int> & cp = cnted[startIdx];
@@ -242,7 +242,7 @@ namespace numbers {
             return res;
         }
         for (int c= min(cp.second, depth); c>=0; c--) {
-            vector< vector<int> > subres = _unique_sum(cnted, startIdx + 1, dest - cp.first * c, depth - c);
+            vector< vector<int> > subres = _unique_sum_fixed_size(cnted, startIdx + 1, dest - cp.first * c, depth - c);
             for (int subi=0; subi<subres.size(); subi++) {
                 vector<int> can = subres[subi];
                 can.insert(can.begin(), c, cp.first);
@@ -255,7 +255,34 @@ namespace numbers {
     
     vector< vector<int> > unique_four_sum(vector<int>& nums, int target) {
         vector< pair<int,int> > cnted = numbers::sort_uniq_c(nums);
-        return numbers::_unique_sum(cnted, 0, target, 4);
+        return numbers::_unique_sum_fixed_size(cnted, 0, target, 4);
+    }
+    
+    /* cnted 是一个递增的数组
+     * pair first 为数值；pair sencond 为数量(假设均>=1)
+     * 无长度限制
+     */
+    vector< vector<int> > _unique_sum(vector<pair<int,int> >& cnted, int startIdx, int dest) {
+        vector< vector<int> > res;
+        if (dest == 0) {
+            vector<int> can;
+            res.push_back(can);
+            return res;
+        }
+        
+        if (startIdx >= cnted.size()) return res;
+        pair<int,int> & cp = cnted[startIdx];
+        if (cp.first > dest) return res;
+        for (int c= cp.second; c>=0; c--) {
+            vector< vector<int> > subres = _unique_sum(cnted, startIdx + 1, dest - cp.first * c);
+            for (int subi=0; subi<subres.size(); subi++) {
+                vector<int> can = subres[subi];
+                can.insert(can.begin(), c, cp.first);
+                res.push_back(can);
+            }
+        }
+        
+        return res;
     }
     
     int decimal_digits_set(int n) {
@@ -1031,6 +1058,16 @@ public:
             return (p - (suffix.begin())) + prefixlen;
         }
         return -1;
+    }
+    
+    vector<vector<int> > combinationSum(vector<int>& candidates, int target) {
+        vector< pair<int,int> > cnted;
+        sort(candidates.begin(), candidates.end());
+        for (int c : candidates) {
+            cnted.push_back(make_pair(c, target/c));
+        }
+        
+        return numbers::_unique_sum(cnted, 0, target);
     }
 };
 
