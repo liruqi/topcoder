@@ -419,6 +419,22 @@ namespace numbers {
         }
         return ret;
     }
+    
+    int trapping_rain_water(vector<int> &height, int base, int next) {
+        int begin = -1;
+        int sum = 0;
+        for (int i=0; i<height.size(); i++) {
+            if (height[i] >= base) {
+                if (begin < 0) {
+                    begin = i + 1;
+                } else {
+                    sum += (i - begin);
+                    begin = i + 1;
+                }
+            }
+        }
+        return sum * (next - base);
+    }
 };
 
 namespace maths {
@@ -1113,6 +1129,22 @@ public:
             }
         }
         return sz + 1;
+    }
+    
+    int trap(vector<int>& height) {
+        set<int> hs;
+        for (int h : height) {
+            hs.insert(h);
+        }
+        int base = -1;
+        int sum = 0;
+        for (auto it = hs.begin(); it!= hs.end(); it++) {
+            if (base >= 0) {
+                sum += numbers::trapping_rain_water(height, base, *it);
+            }
+            base = *it;
+        }
+        return sum;
     }
 };
 
