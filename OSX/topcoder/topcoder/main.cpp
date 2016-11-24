@@ -17,6 +17,13 @@ using namespace std;
 #define abs(x) (((x) > 0) ? (x) : (-(x)))
 #endif
 
+namespace logging {
+    void log(vector<string> arr) {
+        for (auto a : arr) cout<<a<<" ";
+        cout<<endl;
+    }
+}
+
 namespace numbers {
     std::string int_to_roman(int value)
     {
