@@ -1,3 +1,6 @@
+// https://leetcode.com/problems/jump-game-ii/
+// Author: liruqi@gmail.com
+
 struct Node { //min cnt jumps to get idx
     var idx: Int = 0
     var cnt: Int = 0
