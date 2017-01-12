@@ -47,7 +47,7 @@ namespace graph
                 }
             }
             
-            queue<int> nodes; // can be replace by queue
+            queue<int> nodes;
             vector<int> alp;
             for (int i=0; i<G_MAX_NODES; i++) {
                 if (inDegree[i] == 0) nodes.push(i);
