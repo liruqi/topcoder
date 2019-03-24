@@ -1,3 +1,5 @@
+# Solution of hard problems in the list: https://leetcode.com/problemset/top-100-liked-questions/
+
 # https://leetcode.com/problems/lru-cache/
 
 import collections
