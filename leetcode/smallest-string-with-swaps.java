@@ -2,6 +2,7 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 import apple.laf.JRSUIUtils.Tree;
@@ -10,69 +11,81 @@ import java.util.Arrays;
 import java.util.Collections;
 
 class Solution {
-    public static int EMPTY_INDEX = -1;
-    List<TreeSet<Integer>> indiceGroups = new ArrayList<TreeSet<Integer>>();
 
-    Integer[] disjointSet;
-    public int updateIndiceGroups(int x) {
-        Integer g=x;
-        for (; g != disjointSet[g]; g=disjointSet[g]) {
-        }
+    class DSU {
+        int[] parent;
+        int[] size;
         
-        for (int i=0; i<indiceGroups.size(); i++) {
-            TreeSet<Integer> ig = indiceGroups.get(i);
-            if (ig.contains(g)) {
-                ig.add(x);
-                    disjointSet[x] = g;
-                
-                return i;
+        DSU(int n) {
+            parent = new int[n];
+            size = new int[n];
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+                size[i] = 1;
             }
         }
-            
-            TreeSet<Integer> ig = new TreeSet<Integer>();
-            ig.add(x);
-            ig.add(g);
-            indiceGroups.add(ig);
-            return EMPTY_INDEX;
+        
+        int getRootNode(int x) {
+            if (x == parent[x]) return x;
+            parent[x] = getRootNode(parent[x]);
+            return parent[x];
+        }
+        
+        void union(int x, int y) {
+            int xR = getRootNode(x);
+            int yR = getRootNode(y);
+            if (xR == yR) return;
+            if (size[xR] > size[yR]) {
+                size[xR] += size[yR];
+                parent[yR] = xR;
+            } else {
+                size[yR] += size[xR];
+                parent[xR] = yR;
+            }
+        }
     }
     
-    public String smallestStringWithSwapsWithDisjointSet(String s, List<List<Integer>> pairs) {
-        indiceGroups = new ArrayList<TreeSet<Integer>>();
-        disjointSet = new Integer[s.length()];
-        Arrays.fill(disjointSet, EMPTY_INDEX);
+    DSU dsu;
+    Map<Integer, ArrayList<Integer>> indiceGroups;
+    char[] charArr;
+        int[] visited;
 
+    public int updateIndiceGroups(int x) {
+        if (visited[x] >= 0) {
+            return -1;
+        }
+        Integer g = dsu.getRootNode(x);
+        if (indiceGroups.containsKey(g)) {
+            indiceGroups.get(g).add(x);
+            return 0;
+        }
+        ArrayList<Integer> ts = new ArrayList<Integer>();
+        ts.add(x);
+        visited[x] = x;
+        
+        indiceGroups.put(g, ts);
+        return ts.size();
+    }
+    
+    public String smallestStringWithSwaps(String s, List<List<Integer>> pairs) {
+        indiceGroups = new HashMap<Integer, ArrayList<Integer>>();
+        dsu = new DSU(s.length());
         for (List<Integer> lx : pairs) {
             Integer y=lx.get(0);
             Integer z=lx.get(1);
             if (y == z) continue;
-            int dz = 0;
-            if (disjointSet[z] == EMPTY_INDEX) {
-                disjointSet[z] = z;
-            } else {
-                for (; disjointSet[z] >= 0 && disjointSet[z] != z; z=disjointSet[z]) {
-                    dz += 1;
-                }
-            }
-            
-            if (disjointSet[y] != EMPTY_INDEX) {
-                for (; disjointSet[y] != y; y=disjointSet[y]) {
-                }
-            }
-            disjointSet[y] = z;
+            dsu.union(z, y);
         }
 
-        for (int x=0; x<disjointSet.length; x++) {
-            if (disjointSet[x] == EMPTY_INDEX) {
-                continue;
-            }
-            
+        visited = new int[s.length()];
+        Arrays.fill(visited, -1);
+        for (int x=0; x<s.length(); x++) {
             updateIndiceGroups(x);
         }
 
-        char[] charArr = s.toCharArray();
-        for (int i=0; i<indiceGroups.size(); i++) {
-            TreeSet<Integer> ig = indiceGroups.get(i);
-            List<Integer> igl = new ArrayList<Integer>(ig);
+        charArr = s.toCharArray();
+        for (Map.Entry<Integer,ArrayList<Integer>> entry : indiceGroups.entrySet()) {            
+            List<Integer> igl = entry.getValue();
             // Collections.sort(igl);
             // System.out.println(igl);
             int[] charList = new int[256];
@@ -94,9 +107,7 @@ class Solution {
     }
 
     TreeSet<?>[] graph;
-    int[] visited;
     int[] charSet = new int[256];
-    char[] charArr;
     public int addEdge(Integer x, Integer y) {
         if (graph[x] == null) {
             graph[x] = new TreeSet<Integer>();
@@ -117,7 +128,7 @@ class Solution {
         }
         return 1;
     }
-    public String smallestStringWithSwaps(String s, List<List<Integer>> pairs) {
+    public String smallestStringWithSwapsGraphImp(String s, List<List<Integer>> pairs) {
         graph = new TreeSet<?>[s.length()];
         visited = new int[s.length()];
         Arrays.fill(visited, EMPTY_INDEX);
