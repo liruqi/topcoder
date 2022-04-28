@@ -1,5 +1,11 @@
+// https://leetcode.com/problems/smallest-string-with-swaps/
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
+
+import apple.laf.JRSUIUtils.Tree;
+
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -30,7 +36,7 @@ class Solution {
             return EMPTY_INDEX;
     }
     
-    public String smallestStringWithSwaps(String s, List<List<Integer>> pairs) {
+    public String smallestStringWithSwapsWithDisjointSet(String s, List<List<Integer>> pairs) {
         indiceGroups = new ArrayList<TreeSet<Integer>>();
         disjointSet = new Integer[s.length()];
         Arrays.fill(disjointSet, EMPTY_INDEX);
@@ -87,6 +93,65 @@ class Solution {
         return String.valueOf(charArr);
     }
 
+    TreeSet<?>[] graph;
+    boolean[] visited;
+    int[] charSet = new int[256];
+
+    public int addEdge(Integer x, Integer y) {
+        if (graph[x] == null) {
+            graph[x] = new TreeSet<Integer>();
+        }
+        graph[x].add(y);
+        return 0;
+    }
+
+    public TreeSet<Integer> dfs(int x) {
+        visited[x] = true;
+        charSet[(int)charArr[x]] += 1;
+        TreeSet<Integer> indiceGroup = new TreeSet<Integer>();
+        indiceGroup.add(x);
+        if (graph[x] == null) return indiceGroup;
+
+        int c = 1;
+        for (Integer i : graph[x]) {
+            if (! visited[i]) {
+                indiceGroup.addAll(dfs(i));
+            }
+        }
+        return indiceGroup;
+    }
+    public String smallestStringWithSwaps(String s, List<List<Integer>> pairs) {
+        graph = new TreeSet<?>[s.length()];
+        visited = new char[s.length()];
+        for (List<Integer> lx : pairs) {
+            Integer y=lx.get(0);
+            Integer z=lx.get(1);
+            if (y == z) continue;
+            addEdge(y, z);
+            addEdge(z, y);
+        }
+        char[] charArr = s.toCharArray();
+        for (int i=0; i<s.length(); i++) {
+            if (! visited[i]) {
+                Arrays.fill(charSet, 0);
+                TreeSet<Integer> igl = dfs(i);
+                if (igl.size() <= 1) {
+                    continue;
+                }
+
+                char k='a';
+                
+                for (Integer j : igl) {
+                    while (charSet[k] == 0 && k<'z') {
+                        k += 1;
+                    }
+                    charArr[j] = k;
+                    charSet[k] -= 1;
+                }
+            }
+        }
+        return String.valueOf(charArr);
+    }
 
 // "dcab"
 // [[0,3],[1,2],[0,2]]
