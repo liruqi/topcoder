@@ -94,35 +94,33 @@ class Solution {
     }
 
     TreeSet<?>[] graph;
-    boolean[] visited;
+    int[] visited;
     int[] charSet = new int[256];
-
+    char[] charArr;
     public int addEdge(Integer x, Integer y) {
         if (graph[x] == null) {
             graph[x] = new TreeSet<Integer>();
         }
-        graph[x].add(y);
+        ((TreeSet<Integer>)graph[x]).add(y);
         return 0;
     }
 
-    public TreeSet<Integer> dfs(int x) {
-        visited[x] = true;
+    public int dfs(int x, int gid) {
+        visited[x] = gid;
         charSet[(int)charArr[x]] += 1;
-        TreeSet<Integer> indiceGroup = new TreeSet<Integer>();
-        indiceGroup.add(x);
-        if (graph[x] == null) return indiceGroup;
+        if (graph[x] == null) return 0;
 
-        int c = 1;
-        for (Integer i : graph[x]) {
-            if (! visited[i]) {
-                indiceGroup.addAll(dfs(i));
+        for (Integer i : (TreeSet<Integer>)graph[x]) {
+            if (EMPTY_INDEX == visited[i]) {
+                dfs(i, gid);
             }
         }
-        return indiceGroup;
+        return 1;
     }
     public String smallestStringWithSwaps(String s, List<List<Integer>> pairs) {
         graph = new TreeSet<?>[s.length()];
-        visited = new char[s.length()];
+        visited = new int[s.length()];
+        Arrays.fill(visited, EMPTY_INDEX);
         for (List<Integer> lx : pairs) {
             Integer y=lx.get(0);
             Integer z=lx.get(1);
@@ -130,18 +128,19 @@ class Solution {
             addEdge(y, z);
             addEdge(z, y);
         }
-        char[] charArr = s.toCharArray();
+        charArr = s.toCharArray();
         for (int i=0; i<s.length(); i++) {
-            if (! visited[i]) {
+            if (EMPTY_INDEX == visited[i]) {
                 Arrays.fill(charSet, 0);
-                TreeSet<Integer> igl = dfs(i);
-                if (igl.size() <= 1) {
-                    continue;
-                }
+                dfs(i, i);
 
                 char k='a';
-                
-                for (Integer j : igl) {
+                System.out.print("\n" + i + " -> ");
+
+                for (int j=0; j<visited.length; j++) if (visited[j] == i)
+                {
+                    System.out.print(j + " ");
+
                     while (charSet[k] == 0 && k<'z') {
                         k += 1;
                     }
