@@ -28,20 +28,17 @@ class Solution:
                 if isz[ti][1]>sz:
                     isz.add([end,sz])
                     nonopush([end,isz[ti][0]],isz[ti][1])
-                return
-            i=ti
-            while i < len(isz):
-                if isz[i][0]>end:
-                    break
-                if isz[i][0]==end:
-                    if isz[i][1] > sz:
-                        isz.pop(i)
-                        break
-                    return
-                if isz[i][1]>=sz:
+                return 1
+            i=isz.bisect_left([end,sz])
+            while isz[i][0]==end:
+                if isz[i][1] > sz:
                     isz.pop(i)
-                    continue
-                i+=1
+                else:
+                    return 2
+            
+            while i>0 and isz[i-1][1] >= sz:
+                isz.pop(i-1)
+                i-=1
             isz.add([end,sz])
 
             #print("Push:",end,sz,isz)
