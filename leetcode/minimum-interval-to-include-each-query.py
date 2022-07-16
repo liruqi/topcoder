@@ -9,7 +9,7 @@ INF=999999999
 class Solution:
     def minInterval(self, intervals, queries):
         n=len(intervals)
-        sl = SortedList([[x[0],x[1]+1] for x in intervals]) # [)
+        sl = sorted([[x[0],x[1]+1] for x in intervals])
         nonolp = []
         nonolpE = []
         nonosz = []
