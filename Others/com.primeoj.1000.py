@@ -14,10 +14,10 @@ def simple_sieve(limit):
     for num in range(2, limit):
         if is_prime[num]:
             primes.append(num)
-            multiple = num
-            while multiple * num < limit:
-                is_prime[multiple * num] = False
-                multiple += 1
+            multiple = num * num  # Start marking multiples from the square of the prime
+            while multiple < limit:
+                is_prime[multiple] = False
+                multiple += num
             ps.append(multiple)
     return ps
     
@@ -35,11 +35,9 @@ def sieve_of_eratosthenes(maxInp):
         for pos in range(len(prime_states)):
             prime = primes[pos]
             multiple = prime_states[pos]
-            comp = multiple * prime
-            while comp < high:
-                is_prime[comp - low] = False
-                comp += prime
-                multiple += 1
+            while multiple < high:
+                is_prime[multiple - low] = False
+                multiple += prime
             prime_states[pos] = multiple
 
         # Store new primes found in the current block
