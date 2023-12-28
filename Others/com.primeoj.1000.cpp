@@ -1,50 +1,61 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <map>
 
 using namespace std;
 
-const unsigned int MAX_N = 2038074743;
-const unsigned int IN_N = 10;
+const int MAX_N = 2038074743;
+const int IN_N = 10;
 const unsigned int SQRT_N = 65536; // math.sqrt(2038074743) -> 45145.041178406296
-unsigned int inp[IN_N];
-unsigned int limit = sqrt(MAX_N);
-vector<unsigned int> primes;
-vector<unsigned int> prime_states;
-bool is_prime[SQRT_N];
+int inp[IN_N];
+int limit = sqrt(MAX_N);
+int inpHash[SQRT_N];
+int q = -1;
+map<int, int> output;
+int primeCount = 0;
 
-int simple_sieve(unsigned int limit) {
+void simple_sieve(bool is_prime[], vector<int>& ps) {
     fill(is_prime, is_prime + limit, true);
-    for (unsigned int num = 2; num < limit; ++num) {
+    is_prime[0] = is_prime[1] = false;
+
+    for (int num = 2; num < limit; ++num) {
         if (is_prime[num]) {
-            primes.push_back(num);
-            unsigned int multiple = num * num;
+            primeCount ++;
+            if (inpHash[primeCount]>0) {
+                if (output.find(primeCount) != output.end()) {
+                    output[primeCount] = num;
+                }
+            }
+            int multiple = num * num;
             while (multiple < limit) {
                 is_prime[multiple] = false;
                 multiple += num;
             }
-            prime_states.push_back(multiple);
+            ps.push_back(multiple);
         }
     }
-    return 0;
 }
 
-unsigned int sieve_of_eratosthenes(unsigned int maxInp) {
-    simple_sieve(limit);
+int sieve_of_eratosthenes(int maxInp) {
+    bool is_prime[limit];
+    vector<int> prime_states;
 
-    unsigned int low = limit;
-    unsigned int high = 2 * limit;
+    simple_sieve(is_prime, prime_states);
+
+    int low = limit;
+    int high = 2 * limit;
 
     while (low < MAX_N) {
-        bool is_prime[limit];
+        cout << "* " << low << " - " << high << "; " << primeCount << endl;
         fill(is_prime, is_prime + limit, true);
         if (high > MAX_N) {
             high = MAX_N;
         }
 
         for (size_t pos = 0; pos < prime_states.size(); ++pos) {
-            unsigned int prime = primes[pos];
-            unsigned int multiple = prime_states[pos];
+            int prime = pos + 2;
+            int multiple = prime_states[pos];
             while (multiple < high) {
                 is_prime[multiple - low] = false;
                 multiple += prime;
@@ -52,29 +63,34 @@ unsigned int sieve_of_eratosthenes(unsigned int maxInp) {
             prime_states[pos] = multiple;
         }
 
-        // Store new primes found in the current block
-        for (unsigned int i = low; i < high; ++i) {
-            if (is_prime[i - low]) {
-                primes.push_back(i);
+        // Print primes matching inp in the order of input
+        for (int i = low; i < high; ++i) {
+            int hv = i - low;
+            if (is_prime[hv]) {
+                primeCount ++;
+                if (inpHash[primeCount % SQRT_N]>0) {
+                    if (output.find(primeCount) != output.end()) {
+                        output[primeCount] = i;
+                        cout << "$ " << primeCount << " ->" << i << endl;
+                    }
+                }
+                if (primeCount >= maxInp) {
+                    return maxInp;
+                }
             }
-        }
-
-        if (primes.size() >= static_cast<size_t>(maxInp)) {
-            return primes.size();
         }
 
         low += limit;
         high += limit;
     }
 
-    return primes.size();
+    return maxInp;
 }
 
-unsigned int main() {
-    unsigned int q = -1;
-    unsigned int maxInp = 0;
+int main() {
+    int maxInp = 0;
 
-    for (unsigned int i = 0; i < IN_N; ++i) {
+    for (int i = 0; i < IN_N; ++i) {
         string line;
         getline(cin, line);
         if (line[0] != 'q') {
@@ -84,17 +100,19 @@ unsigned int main() {
             q = i;
         }
         maxInp = max(maxInp, inp[i]);
+        int hv = inp[i] % SQRT_N;
+        inpHash[hv] += 1;
+        output[hv] = -1;
     }
 
     // Call the sieve_of_eratosthenes function
-    unsigned int prime_number = sieve_of_eratosthenes(maxInp);
+    sieve_of_eratosthenes(maxInp);
 
-    for (unsigned int i = 0; i < IN_N; ++i) {
+    for (int i = 0; i < IN_N; ++i) {
         if (i == q) {
             cout << "qq_group:";
         }
-        cout << primes[inp[i] - 1] << endl;
+        cout << output[inp[i]] << endl;
     }
-
     return 0;
 }
