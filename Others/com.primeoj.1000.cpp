@@ -11,16 +11,21 @@ const unsigned int SQRT_N = 65536; // math.sqrt(2038074743) -> 45145.04117840629
 int inp[IN_N];
 int limit = sqrt(MAX_N);
 int inpHash[SQRT_N];
+int primes[SQRT_N];
+int prime_states[SQRT_N];
+
+int primesLength = 0;
+int primeCount = 0;
 int q = -1;
 map<int, int> output;
-int primeCount = 0;
 
-void simple_sieve(bool is_prime[], vector<int>& ps) {
+void simple_sieve(bool is_prime[]) {
     fill(is_prime, is_prime + limit, true);
     is_prime[0] = is_prime[1] = false;
 
     for (int num = 2; num < limit; ++num) {
         if (is_prime[num]) {
+            primes[primesLength]=num;
             primeCount ++;
             if (inpHash[primeCount]>0) {
                 if (output.find(primeCount) != output.end()) {
@@ -32,16 +37,16 @@ void simple_sieve(bool is_prime[], vector<int>& ps) {
                 is_prime[multiple] = false;
                 multiple += num;
             }
-            ps.push_back(multiple);
+            prime_states[primesLength] = multiple;
+            primesLength += 1;
         }
     }
 }
 
 int sieve_of_eratosthenes(int maxInp) {
     bool is_prime[limit];
-    vector<int> prime_states;
 
-    simple_sieve(is_prime, prime_states);
+    simple_sieve(is_prime);
 
     int low = limit;
     int high = 2 * limit;
@@ -53,8 +58,8 @@ int sieve_of_eratosthenes(int maxInp) {
             high = MAX_N;
         }
 
-        for (size_t pos = 0; pos < prime_states.size(); ++pos) {
-            int prime = pos + 2;
+        for (size_t pos = 0; pos < primesLength; ++pos) {
+            int prime = primes[pos];
             int multiple = prime_states[pos];
             while (multiple < high) {
                 is_prime[multiple - low] = false;
