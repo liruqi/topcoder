@@ -10,7 +10,6 @@ const int IN_N = 10;
 const unsigned int SQRT_N = 65536; // math.sqrt(2038074743) -> 45145.041178406296
 int inp[IN_N];
 int limit = sqrt(MAX_N);
-int inpHash[SQRT_N];
 int primes[SQRT_N];
 int prime_states[SQRT_N];
 
@@ -19,7 +18,9 @@ int primeCount = 0;
 int q = -1;
 map<int, int> output;
 
-void simple_sieve(bool is_prime[]) {
+int sieve_of_eratosthenes(int maxInp) {
+    std::map<int, int>::iterator outputIter = output.begin();
+    bool is_prime[limit];
     fill(is_prime, is_prime + limit, true);
     is_prime[0] = is_prime[1] = false;
 
@@ -27,10 +28,9 @@ void simple_sieve(bool is_prime[]) {
         if (is_prime[num]) {
             primes[primesLength]=num;
             primeCount ++;
-            if (inpHash[primeCount]>0) {
-                if (output.find(primeCount) != output.end()) {
-                    output[primeCount] = num;
-                }
+            if (primeCount == outputIter->first) {
+                outputIter->second = num;
+                outputIter++;
             }
             int multiple = num * num;
             while (multiple < limit) {
@@ -41,13 +41,6 @@ void simple_sieve(bool is_prime[]) {
             primesLength += 1;
         }
     }
-}
-
-int sieve_of_eratosthenes(int maxInp) {
-    bool is_prime[limit];
-
-    simple_sieve(is_prime);
-
     int low = limit;
     int high = 2 * limit;
 
@@ -73,11 +66,10 @@ int sieve_of_eratosthenes(int maxInp) {
             int hv = i - low;
             if (is_prime[hv]) {
                 primeCount ++;
-                if (inpHash[primeCount % SQRT_N]>0) {
-                    if (output.find(primeCount) != output.end()) {
-                        output[primeCount] = i;
-                        cout << "$ " << primeCount << " ->" << i << endl;
-                    }
+                if (primeCount == outputIter->first) {
+                    cout << "$ " << primeCount << " ->" << i << endl;
+                    outputIter->second = i;
+                    outputIter++;
                 }
                 if (primeCount >= maxInp) {
                     return maxInp;
@@ -105,9 +97,7 @@ int main() {
             q = i;
         }
         maxInp = max(maxInp, inp[i]);
-        int hv = inp[i] % SQRT_N;
-        inpHash[hv] += 1;
-        output[hv] = -1;
+        output[inp[i]] = -1;
     }
 
     // Call the sieve_of_eratosthenes function
