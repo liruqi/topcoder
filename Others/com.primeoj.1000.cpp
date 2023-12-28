@@ -12,6 +12,7 @@ int inp[IN_N];
 int limit = sqrt(MAX_N);
 int primes[SQRT_N];
 int prime_states[SQRT_N];
+char is_prime[SQRT_N];
 
 int primesLength = 0;
 int primeCount = 0;
@@ -20,8 +21,7 @@ map<int, int> output;
 
 int sieve_of_eratosthenes(int maxInp) {
     std::map<int, int>::iterator outputIter = output.begin();
-    bool is_prime[limit];
-    fill(is_prime, is_prime + limit, true);
+    fill(is_prime, is_prime + limit, 1);
     is_prime[0] = is_prime[1] = false;
 
     for (int num = 2; num < limit; ++num) {
@@ -31,10 +31,11 @@ int sieve_of_eratosthenes(int maxInp) {
             if (primeCount == outputIter->first) {
                 outputIter->second = num;
                 outputIter++;
+                if (outputIter == output.end()) return 1;
             }
             int multiple = num * num;
             while (multiple < limit) {
-                is_prime[multiple] = false;
+                is_prime[multiple] = 0;
                 multiple += num;
             }
             prime_states[primesLength] = multiple;
@@ -45,8 +46,7 @@ int sieve_of_eratosthenes(int maxInp) {
     int high = 2 * limit;
 
     while (low < MAX_N) {
-        cout << "* " << low << " - " << high << "; " << primeCount << endl;
-        fill(is_prime, is_prime + limit, true);
+        fill(is_prime, is_prime + limit, 1);
         if (high > MAX_N) {
             high = MAX_N;
         }
@@ -54,10 +54,12 @@ int sieve_of_eratosthenes(int maxInp) {
         for (size_t pos = 0; pos < primesLength; ++pos) {
             int prime = primes[pos];
             int multiple = prime_states[pos];
+            if (multiple >= high) break;
             while (multiple < high) {
-                is_prime[multiple - low] = false;
+                is_prime[multiple - low] = 0;
                 multiple += prime;
             }
+            
             prime_states[pos] = multiple;
         }
 
@@ -67,13 +69,11 @@ int sieve_of_eratosthenes(int maxInp) {
             if (is_prime[hv]) {
                 primeCount ++;
                 if (primeCount == outputIter->first) {
-                    cout << "$ " << primeCount << " ->" << i << endl;
                     outputIter->second = i;
                     outputIter++;
+                    if (outputIter == output.end()) return 2;
                 }
-                if (primeCount >= maxInp) {
-                    return maxInp;
-                }
+                
             }
         }
 
@@ -81,7 +81,7 @@ int sieve_of_eratosthenes(int maxInp) {
         high += limit;
     }
 
-    return maxInp;
+    return 3;
 }
 
 int main() {
