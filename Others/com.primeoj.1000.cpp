@@ -24,7 +24,7 @@ int sieve_of_eratosthenes(int maxInp) {
     fill(is_prime, is_prime + limit, 1);
     is_prime[0] = is_prime[1] = false;
 
-    for (int num = 2; num < limit; ++num) {
+    for (int num = 2; num < limit; num+=2) {
         if (is_prime[num]) {
             primes[primesLength]=num;
             primeCount ++;
@@ -33,13 +33,17 @@ int sieve_of_eratosthenes(int maxInp) {
                 outputIter++;
                 if (outputIter == output.end()) return 1;
             }
+            
             int multiple = num * num;
             while (multiple < limit) {
                 is_prime[multiple] = 0;
-                multiple += num;
+                multiple += (num << 1);
             }
             prime_states[primesLength] = multiple;
             primesLength += 1;
+            if (primeCount == 1) {
+                num = 1;
+            }
         }
     }
     int low = limit;
@@ -49,19 +53,19 @@ int sieve_of_eratosthenes(int maxInp) {
         // cout << "* " << low << " - " << high << "; " << primeCount << endl;
         fill(is_prime, is_prime + limit, 1);
 
-        for (size_t pos = 0; pos < primesLength; ++pos) {
+        for (size_t pos = 1; pos < primesLength; ++pos) {
             int prime = primes[pos];
             int multiple = prime_states[pos];
             while (multiple < high) {
                 is_prime[multiple - low] = 0;
-                multiple += prime;
+                multiple += (prime << 1);
             }
             
             prime_states[pos] = multiple;
         }
 
         // Print primes matching inp in the order of input
-        for (int i = low; i < high; ++i) {
+        for (int i = low+1; i < high; i+=2) {
             int hv = i - low;
             if (is_prime[hv]) {
                 primeCount ++;
@@ -70,7 +74,6 @@ int sieve_of_eratosthenes(int maxInp) {
                     outputIter++;
                     if (outputIter == output.end()) return 2;
                 }
-                
             }
         }
 
