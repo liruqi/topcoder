@@ -14,7 +14,7 @@ def simple_sieve(limit):
     for num in range(2, limit):
         if is_prime[num]:
             primes.append(num)
-            multiple = num * num  # Start marking multiples from the square of the prime
+            multiple = num * num
             while multiple < limit:
                 is_prime[multiple] = False
                 multiple += num

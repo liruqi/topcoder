@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const int MAX_N = 2038074743;
+const int MAX_N = 2038074743 + 1;
 const int IN_N = 10;
 const unsigned int SQRT_N = 65536; // math.sqrt(2038074743) -> 45145.041178406296
 int inp[IN_N];
@@ -46,6 +46,7 @@ int sieve_of_eratosthenes(int maxInp) {
     int high = 2 * limit;
 
     while (low < MAX_N) {
+        // cout << "* " << low << " - " << high << "; " << primeCount << endl;
         fill(is_prime, is_prime + limit, 1);
         if (high > MAX_N) {
             high = MAX_N;
@@ -54,7 +55,6 @@ int sieve_of_eratosthenes(int maxInp) {
         for (size_t pos = 0; pos < primesLength; ++pos) {
             int prime = primes[pos];
             int multiple = prime_states[pos];
-            if (multiple >= high) break;
             while (multiple < high) {
                 is_prime[multiple - low] = 0;
                 multiple += prime;
